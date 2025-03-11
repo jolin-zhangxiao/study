@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>北大附小一年级上古诗文背诵抽查系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>古诗文背诵抽查系统</h1>
+        <div class="progress">
+            <span id="progressText">进度：0/0 (0%)</span>
+        </div>
+     <button onclick="startSelection()" class="btn-primary">开始抽选</button>
+     <button onclick="resetProgress()" class="btn-danger">重置进度</button>
+    
+        <div id="selectionArea"></div>
+        
+        <div class="memorized-list">
+            <h3>待背诵诗文：</h3>
+            <div id="unmemorizedList"></div>
+            <h3>已背诵诗文：</h3>
+            <div id="memorizedList"></div>
+        </div>
+
+        <div class="history">
+            <h3>最近抽选记录：</h3>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <!-- 弹窗结构 -->
+    <div id="poemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化古诗数据
+        let poems = [
+
+            {
+                title: "三字经（节选）",
+                content: `玉不琢，不成器。\n人不学，不知义。\n为人子，方少时。\n亲师友，习礼仪。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "山村咏怀",
+                content: `[宋] 邵雍\n\n一去二三里，\n烟村四五家。\n亭台六七座，\n八九十枝花。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "画",
+                content: `[唐] 王维\n\n远看山有色，\n近听水无声。\n春去花还在，\n人来鸟不惊。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "静夜思",
+                content: `[唐] 李白\n\n床前明月光，\n疑是地上霜。\n举头望明月，\n低头思故乡。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "古朗月行（节选）",
+                content: `[唐] 李白\n\n小时不识月，\n呼作白玉盘。\n又疑瑶台镜，\n飞在青云端。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "风",
+                content: `[唐] 李峤\n\n解落三秋叶，\n能开二月花。\n过江千尺浪，\n入竹万竿斜。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "咏鹅",
+                content: `[唐] 骆宾王\n\n鹅，鹅，鹅，\n曲项向天歌。\n白毛浮绿水，\n红掌拨清波。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "园果",
+                content: `[唐] 王建\n\n雨中梨果病，\n每树无数个。\n小儿出入看，\n一半鸟啄破。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "题秋江独钓图",
+                content: `[清] 王士祯\n\n一蓑一笠一扁舟，\n一丈丝纶一寸钩。\n一曲高歌一樽酒，\n一人独钓一江秋。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "鸟鸣涧",
+                content: `[唐] 王维\n\n人闲桂花落，\n夜静春山空。\n月出惊山鸟，\n时鸣春涧中。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "春晓",
+                content: `[唐] 孟浩然\n\n春眠不觉晓，\n处处闻啼鸟。\n夜来风雨声，\n花落知多少。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "登鹳雀楼",
+                content: `[唐] 王之涣\n\n白日依山尽，\n黄河入海流。\n欲穷千里目，\n更上一层楼。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "所见",
+                content: `[清] 袁枚\n\n牧童骑黄牛，\n歌声振林樾。\n意欲捕鸣蝉，\n忽然闭口立。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "梅花",
+                content: `[宋] 王安石\n\n墙角数枝梅，\n凌寒独自开。\n遥知不是雪，\n为有暗香来。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "子夜四时歌·春歌",
+                content: `[南朝] 乐府民歌\n\n春风动春心，\n流目瞩山林。\n山林多奇采，\n阳鸟吐清音。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "梅溪",
+                content: `[唐] 张籍\n\n自爱新梅好，\n行寻一径斜。\n不教人扫石，\n恐损落来花。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "落叶",
+                content: `[隋] 孔绍安\n\n早秋惊落叶，\n飘零似客心。\n翻飞未肯下，\n犹言惜故林。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "陶者",
+                content: `[宋] 梅尧臣\n\n陶尽门前土，\n屋上无片瓦。\n十指不沾泥，\n鳞鳞居大厦。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "悯农（其一）",
+                content: `[唐] 李绅\n\n春种一粒粟，\n秋收万颗子。\n四海无闲田，\n农夫犹饿死。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "悯农（其二）",
+                content: `[唐] 李绅\n\n锄禾日当午，\n汗滴禾下土。\n谁知盘中餐，\n粒粒皆辛苦。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "绝句·两个黄鹂鸣翠柳",
+                content: `[唐] 杜甫\n\n两个黄鹂鸣翠柳，\n一行白鹭上青天。\n窗含西岭千秋雪，\n门泊东吴万里船。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "鹿柴",
+                content: `[唐] 王维\n\n空山不见人，\n但闻人语响。\n返景入深林，\n复照青苔上。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "马（其五）",
+                content: `[唐] 李贺\n\n大漠沙如雪，\n燕山月似钩。\n何当金络脑，\n快走踏清秋。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "夜宿山寺",
+                content: `[唐] 李白\n\n危楼高百尺，\n手可摘星辰。\n不敢高声语，\n恐惊天上人。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "鸟",
+                content: `[唐] 白居易\n\n谁道群生性命微，\n一般骨肉一般皮。\n劝君莫打枝头鸟，\n子在巢中望母归。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "舟夜书所见",
+                content: `[清] 查慎行\n\n月黑见渔灯，\n孤光一点萤。\n微微风簇浪，\n散作满河星。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "春行即兴",
+                content: `[唐] 李华\n\n宜阳城下草萋萋，\n涧水东流复向西。\n芳树无人花自落，\n春山一路鸟空啼。`,
+                memorized: false,
+                showed: false
+            },
+            {
+                title: "牧童",
+                content: `[唐] 吕岩\n\n草铺横野六七里，\n笛弄晚风三四声。\n归来饱饭黄昏后，\n不脱蓑衣卧月明。`,
+                memorized: false,
+                showed: false
+            }
+        ];
+
+        let isSelecting = false;
+        let history = [];
+
+        // 刷新列表显示
+        function refreshLists() {
+            const unmemorized = poems.filter(p => !p.memorized);
+            const memorized = poems.filter(p => p.memorized);
+
+            document.getElementById('unmemorizedList').innerHTML = 
+                unmemorized.map(p => `
+                    <div class="poem-item unmemorized">
+                        ${p.title}${p.showed ? ' (已查看)' : ''}
+                    </div>
+                `).join('');
+
+            document.getElementById('memorizedList').innerHTML = 
+                memorized.map(p => `
+                    <div class="poem-item memorized">${p.title} ✓</div>
+                `).join('');
+
+            updateProgress();
+            saveToLocalStorage();
+            checkCompletion();
+        }
+
+        // 开始抽选
+        function startSelection() {
+            if(isSelecting || poems.every(p => p.memorized)) return;
+            
+            const availablePoems = poems.filter(p => !p.memorized && !p.showed);
+            if(availablePoems.length === 0) {
+                resetShowedStatus();
+                return;
+            }
+
+            isSelecting = true;
+            let counter = 0;
+            const selectionArea = document.getElementById('selectionArea');
+            
+            const interval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * availablePoems.length);
+                selectionArea.innerHTML = buildPoemCard(availablePoems[randomIndex]);
+                counter++;
+
+                if(counter > 10) {
+                    clearInterval(interval);
+                    finalizeSelection(availablePoems[randomIndex]);
+                    isSelecting = false;
+                }
+            }, 100);
+        }
+
+        // 构建诗文卡片
+        function buildPoemCard(poem) {
+            return `
+                <div class="poem-card scroll-effect">
+                    <h2 class="title" 
+                        onclick="showContent('${poem.title}')">
+                        ${poem.title}
+                    </h2>
+                    <button id="memorizeBtn" 
+                        onclick="markMemorized('${poem.title}')" 
+                        style="background-color: #4CAF50; color: white;">
+                        标记已背
+                    </button>
+                </div>
+            `;
+        }
+
+        // 显示弹窗
+        function showContent(title) {
+            const poem = poems.find(p => p.title === title);
+            if(poem && !poem.showed) {
+                showModal(poem);
+                poem.showed = true;
+                refreshLists();
+            }
+        }
+
+        // 显示弹窗
+        function showModal(poem) {
+            const modal = document.getElementById('poemModal');
+            document.getElementById('modalTitle').textContent = poem.title;
+            document.getElementById('modalContent').innerHTML = poem.content.replace(/\n/g, '<br>');
+            modal.style.display = 'block';
+            
+            modal.onclick = function(e) {
+                if(e.target === modal) closeModal();
+            }
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('poemModal').style.display = 'none';
+        }
+
+        // 标记已背
+        function markMemorized(title) {
+            const poem = poems.find(p => p.title === title);
+            if(poem && !poem.showed) {
+                poem.memorized = true;
+                refreshLists();
+                startSelection();
+            }
+        }
+
+        // 重置显示状态
+        function resetShowedStatus() {
+            poems.forEach(p => p.showed = false);
+            alert("所有诗文都已显示过，已重置查看状态！");
+            refreshLists();
+        }
+
+        // 更新进度
+        function updateProgress() {
+            const memorizedCount = poems.filter(p => p.memorized).length;
+            const total = poems.length;
+            const percent = total > 0 ? Math.round((memorizedCount / total) * 100) : 0;
+            document.getElementById('progressText').textContent = 
+                `进度：${memorizedCount}/${total} (${percent}%)`;
+        }
+
+        // 检查完成状态
+        function checkCompletion() {
+            if(poems.every(p => p.memorized)) {
+                document.getElementById('selectionArea').innerHTML = `
+                    <div class="poem-card" style="background-color: #e8f5e9">
+                        <h2>🎉 恭喜完成所有背诵任务！</h2>
+                    </div>`;
+            }
+        }
+
+        // 重置进度
+        function resetProgress() {
+            if(confirm("确定要重置所有进度吗？")) {
+                poems.forEach(p => {
+                    p.memorized = false;
+                    p.showed = false;
+                });
+                history = [];
+                localStorage.removeItem('poemData');
+                refreshLists();
+                document.getElementById('selectionArea').innerHTML = '';
+            }
+        }
+
+        // 保存到本地存储
+        function saveToLocalStorage() {
+            localStorage.setItem('poemData', JSON.stringify({
+                poems: poems,
+                history: history
+            }));
+        }
+
+        // 最终确定选择
+        function finalizeSelection(poem) {
+            history.unshift({
+                poem: poem.title,
+                time: new Date().toLocaleString()
+            });
+            history = history.slice(0, 5); // 保留最近5条记录
+            updateHistory();
+        }
+
+        // 更新历史记录
+        function updateHistory() {
+            document.getElementById('historyList').innerHTML = 
+                history.map((h, i) => `
+                    <div>${i+1}. ${h.poem} - ${h.time}</div>
+                `).join('');
+        }
+
+        // 初始化加载
+        window.onload = () => {
+            const savedData = localStorage.getItem('poemData');
+            if(savedData) {
+                const data = JSON.parse(savedData);
+                poems = data.poems || poems;
+                history = data.history || [];
+            }
+            refreshLists();
+            updateHistory();
+        }
+    </script>
+</body>
+</html>

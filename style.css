@@ -1,0 +1,134 @@
+/* style.css */
+body {
+    font-family: "楷体", cursive;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.container {
+    text-align: center;
+}
+
+.poem-card {
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.title {
+    cursor: pointer;
+    color: #2c3e50;
+    user-select: none;
+}
+
+.memorized-list {
+    margin-top: 30px;
+    border-top: 2px solid #eee;
+    padding-top: 20px;
+}
+
+.poem-item {
+    margin: 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.unmemorized { background-color: #fff3e0; }
+.memorized { background-color: #e8f5e9; }
+
+.scroll-effect {
+    animation: scroll 0.5s ease-out;
+}
+
+.disabled {
+    background-color: #ddd !important;
+    cursor: not-allowed;
+}
+
+.progress {
+    margin: 15px 0;
+    font-size: 18px;
+}
+
+.history {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    width: 70%;
+    max-width: 600px;
+    border-radius: 10px;
+    animation: modalShow 0.3s ease-out;
+}
+
+#modalTitle {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+#modalContent {
+    font-size: 18px;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+@keyframes scroll {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalShow {
+    from {transform: translateY(-50px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* 按钮颜色样式 */
+.btn-primary {
+    background-color: #2196F3 !important;
+    color: white !important;
+}
+
+.btn-danger {
+    background-color: #f44336 !important;
+    color: white !important;
+}
